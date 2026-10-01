@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+CLAUDE.md
+
+# wygenerowane pisma i prawdziwe listy adresatow - nie na GitHub
+OUTPUT/*
+!OUTPUT/.gitkeep
+INPUT/
+pliki testowe/
+~$*
