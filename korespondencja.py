@@ -58,8 +58,10 @@ def read_rows(xlsx):
     out = []
     for r in rows:
         if any(getattr(c, "value", None) not in (None, "") for c in r):
-            out.append({h: fmt(c.value, getattr(c, "number_format", "General"))
+            row = dict.fromkeys((h for h in header if h), "")  # brakujace komorki = puste
+            row.update({h: fmt(c.value, getattr(c, "number_format", "General"))
                         for h, c in zip(header, r) if h})
+            out.append(row)
     wb.close()
     return header, out
 
@@ -160,8 +162,12 @@ class Word:
     """Konwersja DOCX -> PDF przez zainstalowanego Worda (jedno uruchomienie na cala serie)."""
 
     def __enter__(self):
-        import win32com.client
-        self.app = win32com.client.DispatchEx("Word.Application")
+        try:
+            import win32com.client
+            self.app = win32com.client.DispatchEx("Word.Application")
+        except Exception:
+            raise ValueError("Nie udalo sie uruchomic Microsoft Word - odznacz opcje PDF "
+                             "albo zainstaluj Worda (i biblioteke pywin32: install.bat)")
         self.app.Visible = False
         self.app.DisplayAlerts = 0
         return self
@@ -292,6 +298,8 @@ def gui():
                     import pythoncom  # COM w watku innym niz glowny
                     pythoncom.CoInitialize()
                 run(tpl, xls, out, v_pat.get().strip() or "pismo_{nr}", v_pdf.get(), log)
+            except ValueError as e:
+                log("BLAD: %s" % e)
             except Exception:
                 log("BLAD:\n" + traceback.format_exc())
             finally:
