@@ -310,6 +310,8 @@ def gui():
     btn.config(command=start)
     if "--selftest" in sys.argv:
         root.after(200, root.destroy)
+    import aktualizacja
+    aktualizacja.start(root, "DawidBochno/Korespondencja-seryjna", "main", "korespondencja.py")
     root.mainloop()
 
 
@@ -367,6 +369,8 @@ def selftest(pdf=False):
     assert o2.tables[0].cell(0, 0).text == "Termin: "
     if pdf:
         assert os.path.isfile(res[0][:-5] + ".pdf")
+    import aktualizacja
+    aktualizacja.selftest()
     print("selftest OK" + (" (z PDF)" if pdf else ""))
 
 
